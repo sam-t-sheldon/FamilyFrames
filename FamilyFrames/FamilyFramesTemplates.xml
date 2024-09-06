@@ -1,0 +1,116 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+
+  <CheckButton name="FamilyFramesButtonTemplate" inherits="SecureActionButtonTemplate, ActionButtonTemplate" registerForClicks="AnyUp, AnyDown" mixin="FamilyFramesButtonMixin" virtual="true">
+    <Scripts>
+      <OnLoad method="OnLoad" inherit="append" />
+			<OnEvent method="OnEvent" inherit="append" />
+		</Scripts>
+  </CheckButton>
+
+  <Frame name="FamilyFramesSpellBarTemplate" mixin="FamilyFramesSpellBarMixin" virtual="true">
+    <Size x="675" y="45"/>
+    <Scripts>
+      <OnLoad method="OnLoad" inherit="append" />
+		</Scripts>
+    <Frames>
+  
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton1" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="0" y="0" />
+        </Anchors>
+        <!--<Attributes>
+          <Attribute name="type" value="spell" />
+          <Attribute name="spell" value="Renew" />
+          <Attribute name="unit" value="party1" />
+        </Attributes>-->
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton2" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="45" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton3" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="90" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton4" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="135" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton5" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="180" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton6" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="225" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton7" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="270" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton8" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="315" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton9" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="360" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton10" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="405" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton11" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="450" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton12" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="495" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton13" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="540" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton14" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="585" y="0" />
+        </Anchors>
+      </CheckButton>
+      
+      <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton15" parentArray="buttons">
+        <Anchors>
+          <Anchor point="TOPLEFT" x="630" y="0" />
+        </Anchors>
+      </CheckButton>
+
+    </Frames>
+  </Frame>
+
+</Ui>
