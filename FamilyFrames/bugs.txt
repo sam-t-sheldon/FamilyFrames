@@ -1,0 +1,2 @@
+- If the named macro is missing, it seems like that button defaults to the first macro on that character
+- Maybe should use "useparent-unit" attribute instead of setting units per button, but not sure how

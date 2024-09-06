@@ -11,10 +11,13 @@ function FamilyFramesEventMixin:OnEvent(event, ...)
   local arg1 = ...;
   if (event == "ADDON_LOADED" and arg1 == addonName) then
     -- check for saved variables and set defaults as necessary
+		print("FamilyFrames loaded.");
+		-- initialize the spell bars (TODO: have this be a setting)
+		CreateFrame("Frame", "FamilyFramesSpellBarContainer", UIParent, "FamilyFramesSpellBarContainerTemplate");
   end
 end
 
--- mixin for the button bar frame
+-- mixin for the spell bar frame
 FamilyFramesSpellBarMixin = {};
 
 function FamilyFramesSpellBarMixin:OnLoad()
@@ -24,11 +27,42 @@ function FamilyFramesSpellBarMixin:OnLoad()
   self:SetAnchor();
   self:SetVisibility();
   self:SetButtonAttributes();
+
+	self:RegisterEvent("GROUP_ROSTER_UPDATE");
+	self:RegisterEvent("INSTANCE_GROUP_SIZE_CHANGED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function FamilyFramesSpellBarMixin:OnEvent(event, ...)
+	if (event == "GROUP_ROSTER_UPDATE" or event == "INSTANCE_GROUP_SIZE_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
+		-- rerun the anchor and visibility code in case of frame changes
+		self:SetAnchor();
+		self:SetVisibility();
+	end
+end
+
+function FamilyFramesSpellBarMixin:GetAnchorFrame()
+	local anchorFrameName, anchorFrameChildName = nil, nil;
+	local anchorFrameSplit = FamilyFrames_StringSplit(self.anchorFrameName, "%.");
+	if (anchorFrameSplit) then
+		anchorFrameName = anchorFrameSplit[1];
+		anchorFrameChildName = anchorFrameSplit[2];
+	else
+		anchorFrameName = self.anchorFrameName;
+	end
+	local anchorFrame = _G[anchorFrameName];
+	if (anchorFrame) then
+		if (anchorFrameChildName) then
+			anchorFrame = anchorFrame[anchorFrameChildName];
+		end
+	end
+	return anchorFrame;
 end
 
 function FamilyFramesSpellBarMixin:SetAnchor()
   -- check if the designated anchor frame exists
-  local anchorFrame = _G[self.anchorFrameName];
+  --local anchorFrame = _G[self.anchorFrameName];
+	local anchorFrame = self:GetAnchorFrame();
   if (anchorFrame) then
     self:SetPoint(FamilyFrames_SpellBarAnchorPoint, anchorFrame, FamilyFrames_AnchorSpellBarsTo, 5, 0);
   end
@@ -37,10 +71,11 @@ end
 function FamilyFramesSpellBarMixin:SetVisibility()
   -- check if our anchor frame exists and is visible, then match that
   -- one exception - if we're in raid style party frames, don't show on our player frame spell bar
-  if (self.anchorFrameName == "player" and EditModeManagerFrame:UseRaidStylePartyFrames() and GetNumGroupMembers() > 0) then
+  if (self.anchorFrameName == "PlayerFrame" and EditModeManagerFrame:UseRaidStylePartyFrames() and GetNumGroupMembers() > 0) then
     self:Hide();
   else
-    local anchorFrame = _G[self.anchorFrameName];
+    --local anchorFrame = _G[self.anchorFrameName];
+		local anchorFrame = self:GetAnchorFrame();
     if (anchorFrame and anchorFrame:IsVisible()) then
       self:Show();
     else
@@ -60,7 +95,7 @@ function FamilyFramesSpellBarMixin:SetButtonAttributes()
     -- try to set the icon as part of this update
     button:SetIcon();
 
-    -- update the charge count on load
+    -- update the charge count when first setting
     button:UpdateCount(FamilyFrames_CurrentSpells[ii]["type"], spellID);
   end
 end
@@ -81,6 +116,7 @@ function FamilyFramesButtonMixin:OnLoad()
   self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
   self:RegisterEvent("SPELL_UPDATE_CHARGES");
   self:RegisterEvent("UPDATE_MACROS");
+	self:RegisterEvent("SPELLS_CHANGED");
 end
 
 function FamilyFramesButtonMixin:OnEvent(event, ...)
@@ -106,12 +142,16 @@ function FamilyFramesButtonMixin:OnEvent(event, ...)
       self:SetIcon();
       self:UpdateCount();
     end
+	elseif (event == "SPELLS_CHANGED") then
+		self:SetIcon();
+		self:UpdateCount();
   end
 end
 
 function FamilyFramesButtonMixin:GetSpellID()
   local type, spellName, macroName = self:GetButtonData();
   local spellID = nil;
+	--print(spellName);
   if (type) then
     if (type == "spell") then
       spellID = C_Spell.GetSpellIDForSpellIdentifier(spellName);
@@ -169,94 +209,3 @@ function FamilyFramesButtonMixin:SetIcon()
     self.icon:SetTexture(iconID);
   end
 end
-
-function FamilyFramesButtonMixin:UpdateCooldown(self, actionType, actionID)
-	local locStart, locDuration = 0, 0;
-	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration = 0, 0, false, 0, 0, 0, 0;
-	local modRate = 1.0;
-	local chargeModRate = 1.0;
-	local auraData = nil;
-	local passiveCooldownSpellID = nil;
-	local onEquipPassiveSpellID = nil;
-  -- temp
-  local spellID = actionID;
-
-	--[[if(actionID) then 
-		onEquipPassiveSpellID = C_ActionBar.GetItemActionOnEquipSpellID(self.action);
-	end]]--
-
-	if (onEquipPassiveSpellID) then
-		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(onEquipPassiveSpellID);
-	elseif ((actionType and actionType == "spell") and actionID ) then 
-		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(actionID);
-	elseif(spellID) then 
-		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(spellID);
-	end
-
-	if(passiveCooldownSpellID and passiveCooldownSpellID ~= 0) then 
-		auraData = C_UnitAuras.GetPlayerAuraBySpellID(passiveCooldownSpellID);
-	end
-
-	if(auraData) then
-		local currentTime = GetTime();
-		local timeUntilExpire = auraData.expirationTime - currentTime;
-		local howMuchTimeHasPassed = auraData.duration - timeUntilExpire; 
-
-		locStart =  currentTime - howMuchTimeHasPassed;
-		locDuration = auraData.expirationTime - currentTime;
-		start = currentTime - howMuchTimeHasPassed;
-		duration =  auraData.duration
-		modRate = auraData.timeMod; 
-		charges = auraData.charges; 
-		maxCharges = auraData.maxCharges; 
-		chargeStart = currentTime * 0.001; 
-		chargeDuration = duration * 0.001;
-		chargeModRate = modRate; 
-		enable = 1; 
-	elseif (spellID) then
-		locStart, locDuration = C_Spell.GetSpellLossOfControlCooldown(spellID);
-		
-		local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID) or {startTime = 0, duration = 0, isEnabled = false, modRate = 0};
-		start, duration, enable, modRate = spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
-
-		local chargeInfo = C_Spell.GetSpellCharges(spellID) or {currentCharges = 0, maxCharges = 0, cooldownStartTime = 0, cooldownDuration = 0, chargeModRate = 0};
-		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = chargeInfo.currentCharges, chargeInfo.maxCharges, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate;
-	end
-
-	if ( (locStart + locDuration) > (start + duration) ) then
-		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL ) then
-			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\UI-HUD-ActionBar-LoC");
-			self.cooldown:SetSwipeColor(0.17, 0, 0);
-			self.cooldown:SetHideCountdownNumbers(true);
-			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
-		end
-
-		CooldownFrame_Set(self.cooldown, locStart, locDuration, true, true, modRate);
-		self.cooldown:SetScript("OnCooldownDone", ActionButtonCooldown_OnCooldownDone, false);
-		ClearChargeCooldown(self);
-	else
-		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
-			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\UI-HUD-ActionBar-SecondaryCooldown");
-			self.cooldown:SetSwipeColor(0, 0, 0);
-			self.cooldown:SetHideCountdownNumbers(false);
-			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
-		end
-
-
-		self.cooldown:SetScript("OnCooldownDone", ActionButtonCooldown_OnCooldownDone, locStart > 0);
-
-		if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then
-			StartChargeCooldown(self, chargeStart, chargeDuration, chargeModRate);
-		else
-			ClearChargeCooldown(self);
-		end
-
-		CooldownFrame_Set(self.cooldown, start, duration, enable, false, modRate);
-	end
-end
-
-
-
-  -- TODO: need to add cooldown swipe (probably some events)
-  -- TODO: need to add charges (probably also events)
-  -- TODO: might want to add range check

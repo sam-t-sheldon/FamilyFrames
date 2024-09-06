@@ -1,7 +1,48 @@
+local addonName, addonTable = ...;
+
+--[[
+
+    string.split (s, p)
+    ====================================================================
+    Splits the string [s] into substrings wherever pattern [p] occurs.
+
+    Returns: a table of substrings or, if no match is made [nil].
+
+		Source: https://stackoverflow.com/questions/12014382/split-string-and-replace-dot-char-in-lua
+
+--]]
+FamilyFrames_StringSplit = function(s, p)
+	local temp = {}
+	local index = 0
+	local last_index = string.len(s)
+
+	while true do
+			local i, e = string.find(s, p, index)
+
+			if i and e then
+					local next_index = e + 1
+					local word_bound = i - 1
+					table.insert(temp, string.sub(s, index, word_bound))
+					index = next_index
+			else
+					if index > 0 and index <= last_index then
+							table.insert(temp, string.sub(s, index, last_index))
+					elseif index == 0 then
+							temp = nil
+					end
+					break
+			end
+	end
+
+	return temp
+end
+
+
 -- modified version of the base action bar cooldown update
+-- TODO: move this into the button mixin at some point
 function FamilyFrames_UpdateCooldown(self, actionType, actionID)
 	local locStart, locDuration = 0, 0;
-	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration = 0, 0, false, 0, 0, 0, 0;
+	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration = 0, 0, nil, 0, 0, 0, 0;
 	local modRate = 1.0;
 	local chargeModRate = 1.0;
 	local auraData = nil;
@@ -16,35 +57,35 @@ function FamilyFrames_UpdateCooldown(self, actionType, actionID)
 
 	if (onEquipPassiveSpellID) then
 		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(onEquipPassiveSpellID);
-	elseif ((actionType and actionType == "spell") and actionID ) then 
+	elseif ((actionType and actionType == "spell") and actionID ) then
 		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(actionID);
-	elseif(spellID) then 
+	elseif(spellID) then
 		passiveCooldownSpellID = C_UnitAuras.GetCooldownAuraBySpellID(spellID);
 	end
 
-	if(passiveCooldownSpellID and passiveCooldownSpellID ~= 0) then 
+	if(passiveCooldownSpellID and passiveCooldownSpellID ~= 0) then
 		auraData = C_UnitAuras.GetPlayerAuraBySpellID(passiveCooldownSpellID);
 	end
 
 	if(auraData) then
 		local currentTime = GetTime();
 		local timeUntilExpire = auraData.expirationTime - currentTime;
-		local howMuchTimeHasPassed = auraData.duration - timeUntilExpire; 
+		local howMuchTimeHasPassed = auraData.duration - timeUntilExpire;
 
 		locStart =  currentTime - howMuchTimeHasPassed;
 		locDuration = auraData.expirationTime - currentTime;
 		start = currentTime - howMuchTimeHasPassed;
 		duration =  auraData.duration
-		modRate = auraData.timeMod; 
-		charges = auraData.charges; 
-		maxCharges = auraData.maxCharges; 
-		chargeStart = currentTime * 0.001; 
+		modRate = auraData.timeMod;
+		charges = auraData.charges;
+		maxCharges = auraData.maxCharges;
+		chargeStart = currentTime * 0.001;
 		chargeDuration = duration * 0.001;
-		chargeModRate = modRate; 
-		enable = 1; 
+		chargeModRate = modRate;
+		enable = 1;
 	elseif (spellID) then
 		locStart, locDuration = C_Spell.GetSpellLossOfControlCooldown(spellID);
-		
+
 		local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID) or {startTime = 0, duration = 0, isEnabled = false, modRate = 0};
 		start, duration, enable, modRate = spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
 
@@ -82,78 +123,4 @@ function FamilyFrames_UpdateCooldown(self, actionType, actionID)
 
 		CooldownFrame_Set(self.cooldown, start, duration, enable, false, modRate);
 	end
-end
-
--- abstracting out spell/macro/item(later) info calls into a unified button metadata calls
-function FamilyFrames_GetButtonData(button)
-  local type = button:GetAttribute("type");
-  local spellName = button:GetAttribute("spell");
-  local macroName = button:GetAttribute("macro");
-  return type, spellName, macroName;
-end
-
-function FamilyFrames_GetButtonTexture(button)
-  local type, spellName, macroName = FamilyFrames_GetButtonData(button);
-  local iconID = nil;
-  if (type) then
-    if (type == "spell") then
-      iconID = C_Spell.GetSpellTexture(spellName);
-    elseif (type == "macro") then
-      print("in macro button");
-      print(GetMacroInfo(macroName));
-      _, iconID = GetMacroInfo(macroName);
-    end
-  end
-  return iconID;
-end
-
-function FamilyFrames_GetSpellID(button)
-  local type, spellName, macroName = FamilyFrames_GetButtonData(button);
-  local spellID = nil;
-  if (type) then
-    if (type == "spell") then
-      spellID = C_Spell.GetSpellIDForSpellIdentifier(spellName);
-    elseif (type == "macro") then
-      spellID = GetMacroSpell(macroName);
-    end
-  end
-  return spellID;
-end
-
-function FamilyFrames_GetPartyFrameInfo()
-  -- group number to add (0 if either not in party or party is too large)
-  local num = GetNumGroupMembers();
-  if (num > 5) then
-    num = 0;
-  end
-
-  local raidStyle = EditModeManagerFrame:UseRaidStylePartyFrames();
-
-  return num, raidStyle;
-end
-
-function FamilyFrames_SetupSpellBar(targetUnit, anchorFrame, ...)
-  local frameName = format("FamilyFramesSpellBarFrame%s", targetUnit:sub(1,1):upper()..targetUnit:sub(2));
-  local parentFrame = _G["FamilyFramesSpellBarContainer"];
-  local frame = CreateFrame("Frame", frameName, parentFrame, "FamilyFramesSpellBarTemplate");
-  frame:SetPoint(FamilyFrames_SpellBarAnchorPoint, anchorFrame, FamilyFrames_AnchorSpellBarsTo, 5, 0);
-  --FamilyFrames_PopulateSpellBarButtons(targetUnit);
-end
-
-function FamilyFrames_CreateSpellBars()
-  -- all possible spell bar frames need to be created at startup
-  -- player frame spell bar
-  FamilyFrames_SetupSpellBar("player", "PlayerFrame");
-  -- player frame for first compact party frame
-  FamilyFrames_SetupSpellBar("player", "CompactPartyFrameMember1");
-
-  -- party member spell bars
-  for ii = 2, 5, 1
-  do
-    local nonRaidFrame = format("PartyFrame.MemberFrame%s", ii - 1);
-    local raidFrame = format("CompactPartyFrameMember%s", ii);
-    local unitName = format("party%s", ii - 1);
-    FamilyFrames_SetupSpellBar(unitName, nonRaidFrame);
-    FamilyFrames_SetupSpellBar(unitName, raidFrame);
-  end
 end
