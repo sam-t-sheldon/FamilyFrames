@@ -5,7 +5,15 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
     <Scripts>
       <OnLoad method="OnLoad" inherit="append" />
 			<OnEvent method="OnEvent" inherit="append" />
+      <OnDragStart method="OnDragStart" inherit="append" />
+      <OnDragStart method="OnDragStop" inherit="append" />
+      <OnReceiveDrag method="OnReceiveDrag" inherit="append" />
+      <PreClick method="PreClick" inherit="append" />
+      <PreClick method="PostClick" inherit="append" />
 		</Scripts>
+    <KeyValues>
+      <KeyValue key="slotCurrentlyChanging" type="boolean" value="false" />
+    </KeyValues>
   </CheckButton>
 
   <Frame name="FamilyFramesSpellBarTemplate" mixin="FamilyFramesSpellBarMixin" virtual="true">
@@ -17,95 +25,140 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
     <Frames>
   
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton1" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="1" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="0" y="0" />
         </Anchors>
         <!--<Attributes>
-          <Attribute name="type" value="spell" />
+          <Attribute name="type1" value="spell" />
           <Attribute name="spell" value="Renew" />
           <Attribute name="unit" value="party1" />
         </Attributes>-->
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton2" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="2" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="45" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton3" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="3" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="90" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton4" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="4" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="135" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton5" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="5" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="180" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton6" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="6" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="225" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton7" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="7" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="270" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton8" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="8" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="315" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton9" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="9" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="360" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton10" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="10" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="405" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton11" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="11" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="450" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton12" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="12" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="495" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton13" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="13" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="540" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton14" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="14" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="585" y="0" />
         </Anchors>
       </CheckButton>
       
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton15" parentArray="buttons">
+        <KeyValues>
+          <KeyValue key="spellBarSlot" type="number" value="15" />
+        </KeyValues>
         <Anchors>
           <Anchor point="TOPLEFT" x="630" y="0" />
         </Anchors>
@@ -114,63 +167,63 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
     </Frames>
   </Frame>
 
-  <Frame name="FamilyFramesSpellBarContainerTemplate" parent="UIParent" virtual="true">
+  <Frame name="FamilyFramesSpellBarContainerTemplate" mixin="FamilyFramesSpellBarContainerMixin" parent="UIParent" virtual="true">
     <Frames>
-      <Frame name="FamilyFramesSpellBarPlayer" inherits="FamilyFramesSpellBarTemplate">
+      <Frame name="FamilyFramesSpellBarPlayer" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
         <KeyValues>
           <KeyValue key="targetUnit" value="player" />
           <KeyValue key="anchorFrameName" value="PlayerFrame" />
         </KeyValues>
       </Frame>
-      <Frame name="FamilyFramesSpellBarCompactParty1" inherits="FamilyFramesSpellBarTemplate">
+      <Frame name="FamilyFramesSpellBarCompactParty1" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
         <KeyValues>
           <KeyValue key="targetUnit" value="player" />
           <KeyValue key="anchorFrameName" value="CompactPartyFrameMember1" />
         </KeyValues>
       </Frame>
-      <Frame name="FamilyFramesSpellBarCompactParty2" inherits="FamilyFramesSpellBarTemplate">
+      <Frame name="FamilyFramesSpellBarCompactParty2" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
         <KeyValues>
           <KeyValue key="targetUnit" value="party1" />
           <KeyValue key="anchorFrameName" value="CompactPartyFrameMember2" />
         </KeyValues>
       </Frame>
-      <Frame name="FamilyFramesSpellBarCompactParty3" inherits="FamilyFramesSpellBarTemplate">
+      <Frame name="FamilyFramesSpellBarCompactParty3" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
         <KeyValues>
           <KeyValue key="targetUnit" value="party2" />
           <KeyValue key="anchorFrameName" value="CompactPartyFrameMember3" />
         </KeyValues>
       </Frame>
-      <Frame name="FamilyFramesSpellBarCompactParty4" inherits="FamilyFramesSpellBarTemplate">
+      <Frame name="FamilyFramesSpellBarCompactParty4" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
         <KeyValues>
           <KeyValue key="targetUnit" value="party3" />
           <KeyValue key="anchorFrameName" value="CompactPartyFrameMember4" />
         </KeyValues>
       </Frame>
-      <Frame name="FamilyFramesSpellBarCompactParty5" inherits="FamilyFramesSpellBarTemplate">
+      <Frame name="FamilyFramesSpellBarCompactParty5" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
         <KeyValues>
           <KeyValue key="targetUnit" value="party4" />
           <KeyValue key="anchorFrameName" value="CompactPartyFrameMember5" />
         </KeyValues>
       </Frame>
-      <Frame name="FamilyFramesSpellBarParty1" inherits="FamilyFramesSpellBarTemplate">
+      <Frame name="FamilyFramesSpellBarParty1" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
         <KeyValues>
           <KeyValue key="targetUnit" value="party1" />
           <KeyValue key="anchorFrameName" value="PartyFrame.MemberFrame1" />
         </KeyValues>
       </Frame>
-      <Frame name="FamilyFramesSpellBarParty2" inherits="FamilyFramesSpellBarTemplate">
+      <Frame name="FamilyFramesSpellBarParty2" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
         <KeyValues>
           <KeyValue key="targetUnit" value="party2" />
           <KeyValue key="anchorFrameName" value="PartyFrame.MemberFrame2" />
         </KeyValues>
       </Frame>
-      <Frame name="FamilyFramesSpellBarParty3" inherits="FamilyFramesSpellBarTemplate">
+      <Frame name="FamilyFramesSpellBarParty3" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
         <KeyValues>
           <KeyValue key="targetUnit" value="party3" />
           <KeyValue key="anchorFrameName" value="PartyFrame.MemberFrame3" />
         </KeyValues>
       </Frame>
-      <Frame name="FamilyFramesSpellBarParty4" inherits="FamilyFramesSpellBarTemplate">
+      <Frame name="FamilyFramesSpellBarParty4" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
         <KeyValues>
           <KeyValue key="targetUnit" value="party4" />
           <KeyValue key="anchorFrameName" value="PartyFrame.MemberFrame4" />

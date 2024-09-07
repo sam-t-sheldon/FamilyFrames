@@ -3,13 +3,15 @@
 ## Title: Family Frames
 ## Notes: Party frames improvement using the base raid frames
 ## Author: Sam Sheldon
-## SavedVariables: FamilyFrames_Settings
-## SavedVariablesPerCharacter: FamilyFrames_CharacterSettings
+## SavedVariables: FamilyFrames_SavedSettings
 
 FamilyFrames.lua
 
-FamilyFramesTemplates.xml
 FamilyFramesUtils.lua
+
+FamilyFramesSettings.lua
+
+FamilyFramesTemplates.xml
 FamilyFramesMixins.lua
 
 FamilyFrames.xml

@@ -124,3 +124,22 @@ function FamilyFrames_UpdateCooldown(self, actionType, actionID)
 		CooldownFrame_Set(self.cooldown, start, duration, enable, false, modRate);
 	end
 end
+
+function addonTable.functions.GetClassAndSpecInfo()
+	local playerLoc = PlayerLocation:CreateFromUnit("player");
+
+	local _, _, classID = C_PlayerInfo.GetClass(playerLoc);
+	local specIndex = GetSpecialization();
+	return classID, specIndex;
+end
+
+function addonTable.functions.GetCurrentSpellBarSpells()
+  local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
+	local profile = "General";
+	if (addonTable["Settings"]) then
+		local spellList = addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex];
+		return spellList;
+	else
+		return nil;
+	end
+end
