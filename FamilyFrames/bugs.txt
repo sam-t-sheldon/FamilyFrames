@@ -1,6 +1,0 @@
-- Should use "useparent-unit" attribute instead of setting units per button, but not sure how
-- Need to make all unmodified clicks trigger the spell, not just left clicks
-- Should figure out a solution so that drags aren't initiated without a modifier of some kind (maybe right click drag if your action bars aren't locked?)
-- Graphical glitch: if you drag a spell off the spell bar, it leaves behind the pressed button graphic until you drag from that button again or reload
-- Macros just don't work it seems (targeting seems off, even with something like [help,nodead], and if it fails once the macro just refuses to work ever again)
-- Need to not hardcode for General profile

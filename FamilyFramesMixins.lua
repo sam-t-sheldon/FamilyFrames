@@ -35,8 +35,72 @@ function FamilyFramesSpellBarMixin:OnLoad()
 
   self:LoadSettings();
 
+  -- testing setting an anchor frame with secure handlers
+  self:SetAttribute("_onattributechanged", [=[
+    -- check if this is adding a frame reference and populate value if so
+    local isFrameRef = false;
+    local frameRefName = nil;
+    if (name:match("frameref%-.+")) then
+      -- value is nil, since the original type is userdata
+      -- We can fix that by asking for the frame ref:
+      frameRefName = name:match("frameref%-(.+)");
+      value = self:GetFrameRef(frameRefName);
+      isFrameRef = true;
+    end
+    if (isFrameRef and frameRefName == "ffanchorframe") then
+      -- Now set the anchor point and initial visibility
+      -- TODO: need to get the settings for anchor points in here by setting attributes before this
+      self:SetPoint("TOPLEFT", value, "TOPRIGHT", 5, 0);
+      -- set visibility now that we have an anchor
+      -- get the raid style value we got from LoadSettings
+      local usingRaidStyle = self:GetAttribute("ffusingraidstyle");
+      local currentState = self:GetAttribute("state-ffsshowframe");
+      if (currentState == "show" and value:IsVisible()) then
+        self:Show();
+      elseif (value == "grouped") then
+        if (usingRaidStyle) then
+          self:Hide();
+        else
+          self:Show();
+        end
+      else
+        self:Hide();
+      end
+    end
+    
+    -- STATE (handling this manually because the state and attribute templates can't seem to get along)
+    if (name == "state-ffsshowframe") then
+      -- get the anchor frame to check if it's visible as well
+      local anchorFrame = self:GetFrameRef("ffanchorframe");
+      -- get the raid style value we got from LoadSettings
+      local usingRaidStyle = self:GetAttribute("ffusingraidstyle");
+      if (not anchorFrame) then
+        -- always hide if we don't have an anchor frame
+        self:Hide();
+      elseif (value == "show" and anchorFrame:IsVisible()) then
+        self:Show();
+      elseif (value == "grouped") then
+        -- this can only be player frame, need to hide if we're using raid style
+        if (usingRaidStyle) then
+          self:Hide();
+        else
+          self:Show();
+        end
+      else
+        self:Hide();
+      end
+    end
+  ]=]);
+
+  -- make the macro conditional for this using this frame's unit attribute
+  local showConditional = "[@"..self:GetAttribute("unit")..",exists] show; hide";
+  -- special show condition for player frame
+  if (self.anchorFrameName == "PlayerFrame") then
+    showConditional = "[@"..self:GetAttribute("unit")..",exists,nogroup] show; [@"..self:GetAttribute("unit")..",exists] grouped; hide";
+  end
+  RegisterStateDriver(self, "ffsshowframe", showConditional);
+
   self:SetAnchor();
-  self:SetVisibility();
   self:SetButtonAttributes();
 
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
@@ -48,7 +112,8 @@ end
 
 function FamilyFramesSpellBarMixin:LoadSettings()
   local profile = "General";
-  self:SetScale(addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["BarScale"]); -- for resizing later
+  self:SetScale(addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["BarScale"]);
+  self:SetAttribute("ffusingraidstyle", EditModeManagerFrame:UseRaidStylePartyFrames());
   self:SetButtonAttributes();
 end
 
@@ -57,7 +122,6 @@ function FamilyFramesSpellBarMixin:OnEvent(event, ...)
 	if (event == "GROUP_ROSTER_UPDATE" or event == "INSTANCE_GROUP_SIZE_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
 		-- rerun the anchor and visibility code in case of frame changes
 		self:SetAnchor();
-		self:SetVisibility();
   elseif (event == "PLAYER_SPECIALIZATION_CHANGED") then
     if (arg1 == "player") then
       -- rerun anything different per spec
@@ -87,28 +151,13 @@ function FamilyFramesSpellBarMixin:GetAnchorFrame()
 end
 
 function FamilyFramesSpellBarMixin:SetAnchor()
+  SecureHandlerSetFrameRef(self, "ffanchorframe", self:GetAnchorFrame());
   -- check if the designated anchor frame exists
-  --local anchorFrame = _G[self.anchorFrameName];
-	local anchorFrame = self:GetAnchorFrame();
-  if (anchorFrame) then
-    self:SetPoint(FamilyFrames_SpellBarAnchorPoint, anchorFrame, FamilyFrames_AnchorSpellBarsTo, 5, 0);
-  end
-end
-
-function FamilyFramesSpellBarMixin:SetVisibility()
-  -- check if our anchor frame exists and is visible, then match that
-  -- one exception - if we're in raid style party frames, don't show on our player frame spell bar
-  if (self.anchorFrameName == "PlayerFrame" and EditModeManagerFrame:UseRaidStylePartyFrames() and GetNumGroupMembers() > 0) then
-    self:Hide();
-  else
-    --local anchorFrame = _G[self.anchorFrameName];
-		local anchorFrame = self:GetAnchorFrame();
-    if (anchorFrame and anchorFrame:IsVisible()) then
-      self:Show();
-    else
-      self:Hide();
-    end
-  end
+  -- TODO: do an in combat check for this
+	--local anchorFrame = self:GetAnchorFrame();
+  --if (anchorFrame) then
+  --  self:SetPoint(FamilyFrames_SpellBarAnchorPoint, anchorFrame, FamilyFrames_AnchorSpellBarsTo, 5, 0);
+  --end
 end
 
 function FamilyFramesSpellBarMixin:SetButtonAttributes()
@@ -170,6 +219,8 @@ end
 end]]--
 
 function FamilyFramesButtonMixin:OnDragStart()
+  -- we're not going to allow people to change spells in combat for now, so prevent drags if we're in combat
+  
   -- some general info we'll need
   local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
   local profile = "General";
