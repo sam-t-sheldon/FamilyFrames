@@ -7,6 +7,8 @@ function addonTable.functions.LoadSavedSettings()
       addonTable["Settings"] = FamilyFrames_SavedSettings;
     else
       -- the settings are for an old version, so we'll need to update them incrementally
+      addonTable.functions.UpgradeSettings(FamilyFrames_SavedSettings["Version"], addonTable["Version"]);
+      addonTable["Settings"] = FamilyFrames_SavedSettings;
     end
   else
     -- load the default settings
@@ -55,10 +57,11 @@ end
 
 function addonTable.functions.LoadDefaultSettings()
   addonTable["Settings"] = addonTable.functions.GetDefaultSettings();
+  addonTable["Settings"]["CurrentProfile"] = "General";
+  addonTable.functions.PrintInfo("Default settings loaded.");
 end
 
 function addonTable.functions.CreateSettingsPanel()
-  local profile = "General"; -- TODO: this should vary
   local category = Settings.RegisterVerticalLayoutCategory("Family Frames");
 
   do
@@ -70,11 +73,11 @@ function addonTable.functions.CreateSettingsPanel()
     local step = 1;
 
     local function GetValue()
-      return addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["BarScale"] * 100 or defaultValue;
+      return addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["BarScale"] * 100 or defaultValue;
     end
 
     local function SetValue(value)
-      addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["BarScale"] = value / 100;
+      addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["BarScale"] = value / 100;
       C_EventUtils.NotifySettingsLoaded();
     end
 
@@ -87,4 +90,13 @@ function addonTable.functions.CreateSettingsPanel()
   end
 
   Settings.RegisterAddOnCategory(category);
+end
+
+function addonTable.functions.UpgradeSettings(savedVersion, currentVersion)
+  if (savedVersion == "0.1.0") then
+    -- upgrade to 0.1.1
+    FamilyFrames_SavedSettings["CurrentProfile"] = "General";
+    FamilyFrames_SavedSettings["Version"] = "0.1.1";
+  end
+  addonTable.functions.PrintInfo("Settings updated for version "..currentVersion);
 end

@@ -1,5 +1,5 @@
 ## Interface: 110002
-## Version: 0.1.0
+## Version: 0.1.1
 ## Title: Family Frames
 ## Notes: Party frames improvement using the base raid frames
 ## Author: Sam Sheldon

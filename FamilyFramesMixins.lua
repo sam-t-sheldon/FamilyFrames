@@ -120,8 +120,7 @@ function FamilyFramesSpellBarMixin:LoadSettings()
     addonTable.functions.PrintCombatWarning("Cannot update settings while in combat. Changes will be loaded when combat ends.", "SpellBarSettings");
     return;
   end
-  local profile = "General";
-  self:SetScale(addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["BarScale"]);
+  self:SetScale(addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["BarScale"]);
   self:SetAttribute("ffusingraidstyle", EditModeManagerFrame:UseRaidStylePartyFrames());
   self:SetButtonAttributes();
 end
@@ -227,21 +226,20 @@ function FamilyFramesButtonMixin:PickupAction()
   end
   -- some general info we'll need
   local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
-  local profile = "General";
   -- pick up the spell from the button, removing it from the slot
   -- TODO: only do this while the modifier key is held down
   local type, spellName, macroName = self:GetButtonData();
   if (type == "spell") then
     local spellID = self:GetSpellID();
     C_Spell.PickupSpell(spellID);
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = nil;
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
   elseif (type == "macro") then
     PickupMacro(macroName);
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = nil;
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
   end
   self:GetParent():GetParent():UpdateAllButtons();
   addonTable.functions.SaveSettings();
@@ -255,22 +253,21 @@ function FamilyFramesButtonMixin:PlaceAction()
   end
   -- some general info we'll need
   local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
-  local profile = "General";
   -- check the cursor for info on what's being dragged
   local cursorType = GetCursorInfo();
   -- if the item is a spell or macro, place it on the button slot and clear the cursor
   if (cursorType == "spell") then
     local spellID = select(4, GetCursorInfo());
     local spellName = C_Spell.GetSpellName(spellID);
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = "spell";
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = spellName;
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = "spell";
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = spellName;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
   elseif (cursorType == "macro") then
     local macroIndex = select(2, GetCursorInfo());
     local macroName = GetMacroInfo(macroIndex);
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = "macro";
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
-    addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = macroName;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = "macro";
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = macroName;
   end
   self:GetParent():GetParent():UpdateAllButtons();
   ClearCursor();
@@ -312,9 +309,8 @@ function FamilyFramesButtonMixin:AllowButtonClicksAfterChanging()
   if (self.slotCurrentlyChanging) then
     -- some general info we'll need
     local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
-    local profile = "General";
 
-    self:SetAttribute("type1", addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"]);
+    self:SetAttribute("type1", addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"]);
     self.slotCurrentlyChanging = false;
   end
 end

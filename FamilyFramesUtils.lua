@@ -135,9 +135,8 @@ end
 
 function addonTable.functions.GetCurrentSpellBarSpells()
   local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
-	local profile = "General";
 	if (addonTable["Settings"]) then
-		local spellList = addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex];
+		local spellList = addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex];
 		return spellList;
 	else
 		return nil;
@@ -150,4 +149,9 @@ function addonTable.functions.PrintCombatWarning(message, warning)
 		print("|cFFFF4000Family Frames Warning: |r"..message);
 		addonTable["Warnings"]["Combat"][warning] = true;
 	end
+end
+
+-- function to print info messages
+function addonTable.functions.PrintInfo(message)
+	print("|cFF00FF00Family Frames Info: |r"..message);
 end
