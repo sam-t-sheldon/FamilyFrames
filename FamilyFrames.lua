@@ -11,6 +11,10 @@ end
 if (not addonTable["UnitInfo"]) then
   addonTable["UnitInfo"] = {};
 end
+if (not addonTable["Warnings"]) then
+  addonTable["Warnings"] = {};
+  addonTable["Warnings"]["Combat"] = {};
+end
 
 FamilyFrames_AnchorSpellBarsTo = "TOPRIGHT";
 FamilyFrames_SpellBarAnchorPoint = "TOPLEFT";

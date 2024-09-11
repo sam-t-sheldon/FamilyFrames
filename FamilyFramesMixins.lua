@@ -5,6 +5,7 @@ FamilyFramesEventMixin = {};
 
 function FamilyFramesEventMixin:OnLoad()
   self:RegisterEvent("ADDON_LOADED");
+  self:RegisterEvent("PLAYER_REGEN_ENABLED");
 end
 
 function FamilyFramesEventMixin:OnEvent(event, ...)
@@ -16,6 +17,9 @@ function FamilyFramesEventMixin:OnEvent(event, ...)
     addonTable.functions.CreateSettingsPanel();
 		-- initialize the spell bars (TODO: have this be a setting)
 		CreateFrame("Frame", "FamilyFramesSpellBarContainer", UIParent, "FamilyFramesSpellBarContainerTemplate");
+  elseif (event == "PLAYER_REGEN_ENABLED") then
+    -- clear any combat warnings
+    addonTable["Warnings"]["Combat"] = {};
   end
 end
 
@@ -108,9 +112,14 @@ function FamilyFramesSpellBarMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
   self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
   self:RegisterEvent("SETTINGS_LOADED");
+  self:RegisterEvent("PLAYER_REGEN_ENABLED");
 end
 
 function FamilyFramesSpellBarMixin:LoadSettings()
+  if (InCombatLockdown()) then
+    addonTable.functions.PrintCombatWarning("Cannot update settings while in combat. Changes will be loaded when combat ends.", "SpellBarSettings");
+    return;
+  end
   local profile = "General";
   self:SetScale(addonTable["Settings"]["Profiles"][profile]["Modules"]["SpellBars"]["BarScale"]);
   self:SetAttribute("ffusingraidstyle", EditModeManagerFrame:UseRaidStylePartyFrames());
@@ -128,6 +137,9 @@ function FamilyFramesSpellBarMixin:OnEvent(event, ...)
       self:SetButtonAttributes();
     end
   elseif (event == "SETTINGS_LOADED") then
+    self:LoadSettings();
+  elseif (event == "PLAYER_REGEN_ENABLED") then
+    -- load the settings in case they were changed in combat
     self:LoadSettings();
   end
 end
@@ -152,15 +164,13 @@ end
 
 function FamilyFramesSpellBarMixin:SetAnchor()
   SecureHandlerSetFrameRef(self, "ffanchorframe", self:GetAnchorFrame());
-  -- check if the designated anchor frame exists
-  -- TODO: do an in combat check for this
-	--local anchorFrame = self:GetAnchorFrame();
-  --if (anchorFrame) then
-  --  self:SetPoint(FamilyFrames_SpellBarAnchorPoint, anchorFrame, FamilyFrames_AnchorSpellBarsTo, 5, 0);
-  --end
 end
 
 function FamilyFramesSpellBarMixin:SetButtonAttributes()
+  if (InCombatLockdown()) then
+    addonTable.functions.PrintCombatWarning("Cannot change spell bars in combat.", "SpellBarChange");
+    return;
+  end
   local currentSpells = addonTable.functions.GetCurrentSpellBarSpells();
   if (currentSpells) then
     for ii, button in pairs(self.buttons) do
@@ -201,26 +211,20 @@ function FamilyFramesButtonMixin:OnLoad()
 	self:RegisterEvent("SPELLS_CHANGED");
 end
 
---[[function FamilyFramesButtonMixin:SetButtonAttributes()
-  local currentSpells = addonTable.functions.GetCurrentSpellBarSpells();
-  if (currentSpells) then
-    local ii = self.spellBarSlot;
-    self:SetAttribute("type1", currentSpells[ii]["type"]);
-    self:SetAttribute("spell", currentSpells[ii]["spell"]);
-    self:SetAttribute("macro", currentSpells[ii]["macro"]);
-    local spellID = self:GetSpellID();
-    
-    -- try to set the icon as part of this update
-    self:SetIcon();
-
-    -- update the charge count when first setting
-    self:UpdateCount();
-  end
-end]]--
-
 function FamilyFramesButtonMixin:OnDragStart()
-  -- we're not going to allow people to change spells in combat for now, so prevent drags if we're in combat
-  
+  -- TODO: check modifier key and see if we're allowed to drag
+  self:PickupAction();
+end
+
+function FamilyFramesButtonMixin:OnDragStop()
+  self:AllowButtonClicksAfterChanging();
+end
+
+function FamilyFramesButtonMixin:PickupAction()
+  if (InCombatLockdown()) then
+    addonTable.functions.PrintCombatWarning("Cannot change spell bars in combat.", "SpellBarChange");
+    return;
+  end
   -- some general info we'll need
   local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
   local profile = "General";
@@ -244,11 +248,11 @@ function FamilyFramesButtonMixin:OnDragStart()
   self:PreventButtonClicksWhileChanging();
 end
 
-function FamilyFramesButtonMixin:OnDragStop()
-  self:AllowButtonClicksAfterChanging();
-end
-
 function FamilyFramesButtonMixin:PlaceAction()
+  if (InCombatLockdown()) then
+    addonTable.functions.PrintCombatWarning("Cannot change spell bars in combat.", "SpellBarChange");
+    return;
+  end
   -- some general info we'll need
   local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
   local profile = "General";
@@ -292,11 +296,19 @@ function FamilyFramesButtonMixin:PostClick()
 end
 
 function FamilyFramesButtonMixin:PreventButtonClicksWhileChanging()
+  if (InCombatLockdown()) then
+    addonTable.functions.PrintCombatWarning("Cannot change spell bars in combat.", "SpellBarChange");
+    return;
+  end
   self.slotCurrentlyChanging = true;
   self:SetAttribute("type1", nil);
 end
 
 function FamilyFramesButtonMixin:AllowButtonClicksAfterChanging()
+  if (InCombatLockdown()) then
+    addonTable.functions.PrintCombatWarning("Cannot change spell bars in combat.", "SpellBarChange");
+    return;
+  end
   if (self.slotCurrentlyChanging) then
     -- some general info we'll need
     local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
