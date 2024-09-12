@@ -185,6 +185,9 @@ function FamilyFramesSpellBarMixin:SetButtonAttributes()
       -- update the charge count and check for cooldowns when first setting
       button:UpdateCount(currentSpells[ii]["type"], spellID);
       FamilyFrames_UpdateCooldown(button, currentSpells[ii]["type"], spellID);
+
+      -- TODO: need to check whether or not to show the glow, but for now assuming that it's ok to hide as we'll be out of combat
+      ActionButton_HideOverlayGlow(button);
     end
   end
 end
