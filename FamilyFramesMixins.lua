@@ -173,7 +173,7 @@ function FamilyFramesSpellBarMixin:SetButtonAttributes()
   local currentSpells = addonTable.functions.GetCurrentSpellBarSpells();
   if (currentSpells) then
     for ii, button in pairs(self.buttons) do
-      button:SetAttribute("type1", currentSpells[ii]["type"]);
+      button:SetAttribute("type*", currentSpells[ii]["type"]);
       button:SetAttribute("spell", currentSpells[ii]["spell"]);
       button:SetAttribute("macro", currentSpells[ii]["macro"]);
       button:SetAttribute("unit", self.targetUnit);
@@ -298,7 +298,7 @@ function FamilyFramesButtonMixin:PreventButtonClicksWhileChanging()
     return;
   end
   self.slotCurrentlyChanging = true;
-  self:SetAttribute("type1", nil);
+  self:SetAttribute("type*", nil);
 end
 
 function FamilyFramesButtonMixin:AllowButtonClicksAfterChanging()
@@ -310,14 +310,14 @@ function FamilyFramesButtonMixin:AllowButtonClicksAfterChanging()
     -- some general info we'll need
     local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
 
-    self:SetAttribute("type1", addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"]);
+    self:SetAttribute("type*", addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"]);
     self.slotCurrentlyChanging = false;
   end
 end
 
 function FamilyFramesButtonMixin:OnEvent(event, ...)
   local idArg = ...;
-  local type = self:GetAttribute("type1");
+  local type = self:GetAttribute("type*");
   local spellID = self:GetSpellID();
   if (event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW") then
 		if (spellID == idArg) then
@@ -334,7 +334,7 @@ function FamilyFramesButtonMixin:OnEvent(event, ...)
   elseif (event == "SPELL_UPDATE_CHARGES") then
 		self:UpdateCount();
   elseif (event == "UPDATE_MACROS") then
-    if (self:GetAttribute("type1") == "macro") then
+    if (self:GetAttribute("type*") == "macro") then
       self:SetIcon();
       self:UpdateCount();
     end
@@ -380,7 +380,7 @@ function FamilyFramesButtonMixin:UpdateCount()
 end
 
 function FamilyFramesButtonMixin:GetButtonData()
-  local type = self:GetAttribute("type1");
+  local type = self:GetAttribute("type*");
   local spellName = self:GetAttribute("spell");
   local macroName = self:GetAttribute("macro");
   return type, spellName, macroName;

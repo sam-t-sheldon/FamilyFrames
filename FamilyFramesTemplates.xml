@@ -32,7 +32,7 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
           <Anchor point="TOPLEFT" x="0" y="0" />
         </Anchors>
         <!--<Attributes>
-          <Attribute name="type1" value="spell" />
+          <Attribute name="type*" value="spell" />
           <Attribute name="spell" value="Renew" />
           <Attribute name="unit" value="party1" />
         </Attributes>-->
