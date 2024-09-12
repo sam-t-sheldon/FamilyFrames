@@ -215,8 +215,10 @@ function FamilyFramesButtonMixin:OnLoad()
 end
 
 function FamilyFramesButtonMixin:OnDragStart()
-  -- TODO: check modifier key and see if we're allowed to drag
-  self:PickupAction();
+  -- check modifier key and see if we're allowed to drag
+  if (IsModifiedClick("PICKUPACTION")) then
+    self:PickupAction();
+  end
 end
 
 function FamilyFramesButtonMixin:OnDragStop()
