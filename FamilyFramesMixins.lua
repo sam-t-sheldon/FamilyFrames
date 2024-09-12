@@ -182,8 +182,9 @@ function FamilyFramesSpellBarMixin:SetButtonAttributes()
       -- try to set the icon as part of this update
       button:SetIcon();
 
-      -- update the charge count when first setting
+      -- update the charge count and check for cooldowns when first setting
       button:UpdateCount(currentSpells[ii]["type"], spellID);
+      FamilyFrames_UpdateCooldown(button, currentSpells[ii]["type"], spellID);
     end
   end
 end
@@ -376,6 +377,8 @@ function FamilyFramesButtonMixin:UpdateCount()
 		else
 			text:SetText("");
 		end
+  else
+    text:SetText("");
 	end
 end
 
