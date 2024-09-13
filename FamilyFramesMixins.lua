@@ -268,12 +268,17 @@ function FamilyFramesButtonMixin:PlaceAction()
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = "spell";
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = spellName;
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
-  --elseif (cursorType == "macro") then
-  --  local macroIndex = select(2, GetCursorInfo());
-  --  local macroName = GetMacroInfo(macroIndex);
-  --  addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = "macro";
-  --  addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
-  --  addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = macroName;
+  elseif (cursorType == "macro") then
+    local macroIndex = select(2, GetCursorInfo());
+    local macroName, _, macroBody = GetMacroInfo(macroIndex);
+    -- check the macroBody for @mouseover, and throw a warning
+    local macroHasMo = string.find(macroBody, "@mouseover");
+    if (not macroHasMo) then
+      addonTable.functions.PrintWarning("The macro you have placed doesn't contain @mouseover, and might not cast on the correct target.");
+    end
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = "macro";
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = macroName;
   end
   self:GetParent():GetParent():UpdateAllButtons();
   ClearCursor();
@@ -409,9 +414,25 @@ end
 
 function FamilyFramesButtonMixin:SetIcon()
   local iconID = self:GetButtonTexture();
+  local type, _, macroName = self:GetButtonData();
   if (iconID) then
     self.icon:SetTexture(iconID);
   else
     self.icon:SetTexture(nil);
+  end
+  -- add a warning icon for macros without mouseover, unless that's turned off in the settings
+  if (type == "macro") then
+    local _, _, macroBody = GetMacroInfo(macroName);
+    local macroHasMo = true; -- assuming the macro's fine until told otherwise
+    if (macroBody) then
+      macroHasMo = string.find(macroBody, "@mouseover");
+    end
+    if (macroHasMo) then
+      self.warningIcon:Hide();
+    else
+      self.warningIcon:Show();
+    end
+  else
+    self.warningIcon:Hide();
   end
 end

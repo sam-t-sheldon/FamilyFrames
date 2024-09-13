@@ -14,6 +14,16 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
     <KeyValues>
       <KeyValue key="slotCurrentlyChanging" type="boolean" value="false" />
     </KeyValues>
+    <Layers>
+      <Layer level="OVERLAY">
+        <Texture name="$parentWarningIcon" parentKey="warningIcon" atlas="Ping_Chat_Warning" useAtlasSize="false" hidden="true">
+          <Size x="15" y="15" />
+          <Anchors>
+            <Anchor point="TOPLEFT" x="4" y="-2" />
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
   </CheckButton>
 
   <Frame name="FamilyFramesSpellBarTemplate" inherits="SecureHandlerAttributeTemplate" mixin="FamilyFramesSpellBarMixin" virtual="true">

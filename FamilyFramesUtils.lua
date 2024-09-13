@@ -146,9 +146,13 @@ end
 -- function to print combat warnings without spamming the chat (the combat warnings will reset per combat through the FamilyFramesEventMixin code)
 function addonTable.functions.PrintCombatWarning(message, warning)
 	if (not addonTable["Warnings"]["Combat"][warning]) then
-		print("|cFFFF4000Family Frames Warning: |r"..message);
+		addonTable.functions.PrintWarning(message, warning);
 		addonTable["Warnings"]["Combat"][warning] = true;
 	end
+end
+
+function addonTable.functions.PrintWarning(message, warning)
+	print("|cFFFF4000Family Frames Warning: |r"..message);
 end
 
 -- function to print info messages
