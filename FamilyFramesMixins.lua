@@ -176,6 +176,7 @@ function FamilyFramesSpellBarMixin:SetButtonAttributes()
       button:SetAttribute("type*", currentSpells[ii]["type"]);
       button:SetAttribute("spell", currentSpells[ii]["spell"]);
       button:SetAttribute("macro", currentSpells[ii]["macro"]);
+      button:SetAttribute("item", currentSpells[ii]["item"]);
       button:SetAttribute("unit", self.targetUnit);
       local spellID = button:GetSpellID();
       
@@ -241,11 +242,19 @@ function FamilyFramesButtonMixin:PickupAction()
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = nil;
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["item"] = nil;
   elseif (type == "macro") then
     PickupMacro(macroName);
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = nil;
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["item"] = nil;
+  elseif (type == "item") then
+    -- TODO: pick up item
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["item"] = nil;
   end
   self:GetParent():GetParent():UpdateAllButtons();
   addonTable.functions.SaveSettings();
@@ -268,6 +277,7 @@ function FamilyFramesButtonMixin:PlaceAction()
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = "spell";
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = spellName;
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["item"] = nil;
   elseif (cursorType == "macro") then
     local macroIndex = select(2, GetCursorInfo());
     local macroName, _, macroBody = GetMacroInfo(macroIndex);
@@ -279,6 +289,18 @@ function FamilyFramesButtonMixin:PlaceAction()
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = "macro";
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = macroName;
+    addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["item"] = nil;
+  elseif (cursorType == "item") then
+    local itemLink = select(3, GetCursorInfo());
+    local spellID = C_Item.GetItemSpell(itemLink);
+    if (spellID) then
+      -- if this item is usable, then get the name and put it on the bar, otherwise we'll just return
+      local itemName = C_Item.GetItemInfo(itemLink);
+      addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["type"] = "item";
+      addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
+      addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
+      addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["item"] = itemName;
+    end
   end
   self:GetParent():GetParent():UpdateAllButtons();
   ClearCursor();
@@ -372,14 +394,15 @@ end
 function FamilyFramesButtonMixin:UpdateCount()
 	local text = self.Count;
   local spellID = self:GetSpellID();
-	--[[if ( IsConsumableAction(action) or IsStackableAction(action) or (not IsItemAction(action) and GetActionCount(action) > 0) ) then
-		local count = GetActionCount(action);
-		if ( count > (self.maxDisplayCount or 9999 ) ) then
+  local type, _, _, itemName = self:GetButtonData();
+  if (type == "item" and itemName) then
+    local count = C_Item.GetItemCount(itemName);
+		if (count > 9999) then
 			text:SetText("*");
 		else
 			text:SetText(count);
 		end
-	else]]--
+  end
   if (spellID) then
 		local chargeInfo = C_Spell.GetSpellCharges(spellID);
 		if (chargeInfo and chargeInfo.maxCharges > 1) then
@@ -396,17 +419,20 @@ function FamilyFramesButtonMixin:GetButtonData()
   local type = self:GetAttribute("type*");
   local spellName = self:GetAttribute("spell");
   local macroName = self:GetAttribute("macro");
-  return type, spellName, macroName;
+  local itemName = self:GetAttribute("item");
+  return type, spellName, macroName, itemName;
 end
 
 function FamilyFramesButtonMixin:GetButtonTexture()
-  local type, spellName, macroName = self:GetButtonData();
+  local type, spellName, macroName, itemName = self:GetButtonData();
   local iconID = nil;
   if (type) then
     if (type == "spell") then
       iconID = C_Spell.GetSpellTexture(spellName);
     elseif (type == "macro") then
       _, iconID = GetMacroInfo(macroName);
+    elseif (type == "item" and itemName) then
+      iconID = C_Item.GetItemIconByID(itemName);
     end
   end
   return iconID;
