@@ -15,6 +15,9 @@ if (not addonTable["Warnings"]) then
   addonTable["Warnings"] = {};
   addonTable["Warnings"]["Combat"] = {};
 end
+if (not addonTable.spellBars) then
+  addonTable.spellBars = {};
+end
 
 FamilyFrames_AnchorSpellBarsTo = "TOPRIGHT";
 FamilyFrames_SpellBarAnchorPoint = "TOPLEFT";

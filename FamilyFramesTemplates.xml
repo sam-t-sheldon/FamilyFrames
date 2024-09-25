@@ -26,12 +26,15 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
     </Layers>
   </CheckButton>
 
-  <Frame name="FamilyFramesSpellBarTemplate" inherits="SecureHandlerAttributeTemplate" mixin="FamilyFramesSpellBarMixin" virtual="true">
+  <Frame name="FamilyFramesSpellBarTemplate" inherits="SecureHandlerStateTemplate" mixin="FamilyFramesSpellBarMixin" virtual="true">
     <Size x="675" y="45"/>
     <Scripts>
       <OnLoad method="OnLoad" inherit="append" />
 			<OnEvent method="OnEvent" inherit="append" />
 		</Scripts>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="1"/>
+    </Anchors>
     <Frames>
   
       <CheckButton inherits="FamilyFramesButtonTemplate" name="$parentButton1" parentArray="buttons">
@@ -174,101 +177,6 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
         </Anchors>
       </CheckButton>
 
-    </Frames>
-  </Frame>
-
-  <Frame name="FamilyFramesSpellBarContainerTemplate" mixin="FamilyFramesSpellBarContainerMixin" parent="UIParent" virtual="true">
-    <Frames>
-      <Frame name="FamilyFramesSpellBarPlayer" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
-        <KeyValues>
-          <KeyValue key="targetUnit" value="player" />
-          <KeyValue key="anchorFrameName" value="PlayerFrame" />
-        </KeyValues>
-        <Attributes>
-          <Attribute name="unit" value="player" />
-        </Attributes>
-      </Frame>
-      <Frame name="FamilyFramesSpellBarCompactParty1" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
-        <KeyValues>
-          <KeyValue key="targetUnit" value="player" />
-          <KeyValue key="anchorFrameName" value="CompactPartyFrameMember1" />
-        </KeyValues>
-        <Attributes>
-          <Attribute name="unit" value="player" />
-        </Attributes>
-      </Frame>
-      <Frame name="FamilyFramesSpellBarCompactParty2" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
-        <KeyValues>
-          <KeyValue key="targetUnit" value="party1" />
-          <KeyValue key="anchorFrameName" value="CompactPartyFrameMember2" />
-        </KeyValues>
-        <Attributes>
-          <Attribute name="unit" value="party1" />
-        </Attributes>
-      </Frame>
-      <Frame name="FamilyFramesSpellBarCompactParty3" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
-        <KeyValues>
-          <KeyValue key="targetUnit" value="party2" />
-          <KeyValue key="anchorFrameName" value="CompactPartyFrameMember3" />
-        </KeyValues>
-        <Attributes>
-          <Attribute name="unit" value="party2" />
-        </Attributes>
-      </Frame>
-      <Frame name="FamilyFramesSpellBarCompactParty4" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
-        <KeyValues>
-          <KeyValue key="targetUnit" value="party3" />
-          <KeyValue key="anchorFrameName" value="CompactPartyFrameMember4" />
-        </KeyValues>
-        <Attributes>
-          <Attribute name="unit" value="party3" />
-        </Attributes>
-      </Frame>
-      <Frame name="FamilyFramesSpellBarCompactParty5" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
-        <KeyValues>
-          <KeyValue key="targetUnit" value="party4" />
-          <KeyValue key="anchorFrameName" value="CompactPartyFrameMember5" />
-        </KeyValues>
-        <Attributes>
-          <Attribute name="unit" value="party4" />
-        </Attributes>
-      </Frame>
-      <Frame name="FamilyFramesSpellBarParty1" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
-        <KeyValues>
-          <KeyValue key="targetUnit" value="party1" />
-          <KeyValue key="anchorFrameName" value="PartyFrame.MemberFrame1" />
-        </KeyValues>
-        <Attributes>
-          <Attribute name="unit" value="party1" />
-        </Attributes>
-      </Frame>
-      <Frame name="FamilyFramesSpellBarParty2" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
-        <KeyValues>
-          <KeyValue key="targetUnit" value="party2" />
-          <KeyValue key="anchorFrameName" value="PartyFrame.MemberFrame2" />
-        </KeyValues>
-        <Attributes>
-          <Attribute name="unit" value="party2" />
-        </Attributes>
-      </Frame>
-      <Frame name="FamilyFramesSpellBarParty3" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
-        <KeyValues>
-          <KeyValue key="targetUnit" value="party3" />
-          <KeyValue key="anchorFrameName" value="PartyFrame.MemberFrame3" />
-        </KeyValues>
-        <Attributes>
-          <Attribute name="unit" value="party3" />
-        </Attributes>
-      </Frame>
-      <Frame name="FamilyFramesSpellBarParty4" inherits="FamilyFramesSpellBarTemplate" parentArray="spellBars">
-        <KeyValues>
-          <KeyValue key="targetUnit" value="party4" />
-          <KeyValue key="anchorFrameName" value="PartyFrame.MemberFrame4" />
-        </KeyValues>
-        <Attributes>
-          <Attribute name="unit" value="party4" />
-        </Attributes>
-      </Frame>
     </Frames>
   </Frame>
 

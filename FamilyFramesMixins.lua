@@ -16,17 +16,63 @@ function FamilyFramesEventMixin:OnEvent(event, ...)
     -- load up options panel
     addonTable.functions.CreateSettingsPanel();
 		-- initialize the spell bars (TODO: have this be a setting)
-		CreateFrame("Frame", "FamilyFramesSpellBarContainer", UIParent, "FamilyFramesSpellBarContainerTemplate");
+		--CreateFrame("Frame", "FamilyFramesSpellBarContainer", UIParent, "FamilyFramesSpellBarContainerTemplate");
+    self:CreateSpellBars();
   elseif (event == "PLAYER_REGEN_ENABLED") then
     -- clear any combat warnings
     addonTable["Warnings"]["Combat"] = {};
   end
 end
 
-FamilyFramesSpellBarContainerMixin = {};
+function FamilyFramesEventMixin:CreateSpellBars()
+  addonTable.spellBars.frames = {};
+  -- raid frame 1
+  addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty1"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["CompactPartyFrameMember1"], "FamilyFramesSpellBarTemplate");
+  addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty1"].targetUnit = "player";
+  -- raid frame 2
+  addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty2"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["CompactPartyFrameMember2"], "FamilyFramesSpellBarTemplate");
+  addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty2"].targetUnit = "party1";
+  -- raid frame 3
+  addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty3"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["CompactPartyFrameMember3"], "FamilyFramesSpellBarTemplate");
+  addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty3"].targetUnit = "party2";
+  -- raid frame 4
+  addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty4"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["CompactPartyFrameMember4"], "FamilyFramesSpellBarTemplate");
+  addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty4"].targetUnit = "party3";
+  -- raid frame 5
+  addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty5"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["CompactPartyFrameMember5"], "FamilyFramesSpellBarTemplate");
+  addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty5"].targetUnit = "party4";
 
-function FamilyFramesSpellBarContainerMixin:UpdateAllButtons()
-  for ii, spellBar in pairs(self.spellBars) do
+  -- party frame 1
+  addonTable.spellBars.frames["FamilyFramesSpellBarParty1"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["PartyFrame"]["MemberFrame1"], "FamilyFramesSpellBarTemplate");
+  addonTable.spellBars.frames["FamilyFramesSpellBarParty1"].targetUnit = "party1";
+  -- party frame 2
+  addonTable.spellBars.frames["FamilyFramesSpellBarParty2"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["PartyFrame"]["MemberFrame2"], "FamilyFramesSpellBarTemplate");
+  addonTable.spellBars.frames["FamilyFramesSpellBarParty2"].targetUnit = "party2";
+  -- party frame 3
+  addonTable.spellBars.frames["FamilyFramesSpellBarParty3"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["PartyFrame"]["MemberFrame3"], "FamilyFramesSpellBarTemplate");
+  addonTable.spellBars.frames["FamilyFramesSpellBarParty3"].targetUnit = "party3";
+  -- party frame 4
+  addonTable.spellBars.frames["FamilyFramesSpellBarParty4"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["PartyFrame"]["MemberFrame4"], "FamilyFramesSpellBarTemplate");
+  addonTable.spellBars.frames["FamilyFramesSpellBarParty4"].targetUnit = "party4";
+
+  -- player frame (this needs some extra handling to hide if the raid frames are up)
+  addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["PlayerFrame"], "FamilyFramesSpellBarTemplate");
+  addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"].targetUnit = "player";
+  SecureHandlerSetFrameRef(addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"], "ffraidplayerframe", addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty1"]);
+  RegisterStateDriver(addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"], "ffsshowframe", "[@party1,exists] hide; show");
+  addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"]:SetAttribute("_onstate-ffsshowframe", [=[
+    local raidPlayerFrame = self:GetFrameRef("ffraidplayerframe");
+    if (raidPlayerFrame:IsVisible()) then
+      self:Hide();
+    else
+      self:Show();
+    end
+  ]=]);
+
+end
+
+function FamilyFramesEventMixin:UpdateAllButtons()
+  for ii, spellBar in pairs(addonTable.spellBars.frames) do
     spellBar:SetButtonAttributes();
   end
 end
@@ -39,72 +85,6 @@ function FamilyFramesSpellBarMixin:OnLoad()
 
   self:LoadSettings();
 
-  -- testing setting an anchor frame with secure handlers
-  self:SetAttribute("_onattributechanged", [=[
-    -- check if this is adding a frame reference and populate value if so
-    local isFrameRef = false;
-    local frameRefName = nil;
-    if (name:match("frameref%-.+")) then
-      -- value is nil, since the original type is userdata
-      -- We can fix that by asking for the frame ref:
-      frameRefName = name:match("frameref%-(.+)");
-      value = self:GetFrameRef(frameRefName);
-      isFrameRef = true;
-    end
-    if (isFrameRef and frameRefName == "ffanchorframe") then
-      -- Now set the anchor point and initial visibility
-      -- TODO: need to get the settings for anchor points in here by setting attributes before this
-      self:SetPoint("TOPLEFT", value, "TOPRIGHT", 5, 0);
-      -- set visibility now that we have an anchor
-      -- get the raid style value we got from LoadSettings
-      local usingRaidStyle = self:GetAttribute("ffusingraidstyle");
-      local currentState = self:GetAttribute("state-ffsshowframe");
-      if (currentState == "show" and value:IsVisible()) then
-        self:Show();
-      elseif (value == "grouped") then
-        if (usingRaidStyle) then
-          self:Hide();
-        else
-          self:Show();
-        end
-      else
-        self:Hide();
-      end
-    end
-    
-    -- STATE (handling this manually because the state and attribute templates can't seem to get along)
-    if (name == "state-ffsshowframe") then
-      -- get the anchor frame to check if it's visible as well
-      local anchorFrame = self:GetFrameRef("ffanchorframe");
-      -- get the raid style value we got from LoadSettings
-      local usingRaidStyle = self:GetAttribute("ffusingraidstyle");
-      if (not anchorFrame) then
-        -- always hide if we don't have an anchor frame
-        self:Hide();
-      elseif (value == "show" and anchorFrame:IsVisible()) then
-        self:Show();
-      elseif (value == "grouped") then
-        -- this can only be player frame, need to hide if we're using raid style
-        if (usingRaidStyle) then
-          self:Hide();
-        else
-          self:Show();
-        end
-      else
-        self:Hide();
-      end
-    end
-  ]=]);
-
-  -- make the macro conditional for this using this frame's unit attribute
-  local showConditional = "[@"..self:GetAttribute("unit")..",exists] show; hide";
-  -- special show condition for player frame
-  if (self.anchorFrameName == "PlayerFrame") then
-    showConditional = "[@"..self:GetAttribute("unit")..",exists,nogroup] show; [@"..self:GetAttribute("unit")..",exists] grouped; hide";
-  end
-  RegisterStateDriver(self, "ffsshowframe", showConditional);
-
-  self:SetAnchor();
   self:SetButtonAttributes();
 
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
@@ -113,6 +93,8 @@ function FamilyFramesSpellBarMixin:OnLoad()
   self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
   self:RegisterEvent("SETTINGS_LOADED");
   self:RegisterEvent("PLAYER_REGEN_ENABLED");
+
+  self:Show();
 end
 
 function FamilyFramesSpellBarMixin:LoadSettings()
@@ -128,8 +110,14 @@ end
 function FamilyFramesSpellBarMixin:OnEvent(event, ...)
   local arg1 = ...;
 	if (event == "GROUP_ROSTER_UPDATE" or event == "INSTANCE_GROUP_SIZE_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
-		-- rerun the anchor and visibility code in case of frame changes
-		self:SetAnchor();
+		-- if we're not in combat, manually check the state on the player frame bars just in case
+    if (not InCombatLockdown()) then
+      if (addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty1"]:IsVisible()) then
+        addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"]:Hide();
+      else
+        addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"]:Show();
+      end
+    end
   elseif (event == "PLAYER_SPECIALIZATION_CHANGED") then
     if (arg1 == "player") then
       -- rerun anything different per spec
@@ -141,28 +129,6 @@ function FamilyFramesSpellBarMixin:OnEvent(event, ...)
     -- load the settings in case they were changed in combat
     self:LoadSettings();
   end
-end
-
-function FamilyFramesSpellBarMixin:GetAnchorFrame()
-	local anchorFrameName, anchorFrameChildName = nil, nil;
-	local anchorFrameSplit = FamilyFrames_StringSplit(self.anchorFrameName, "%.");
-	if (anchorFrameSplit) then
-		anchorFrameName = anchorFrameSplit[1];
-		anchorFrameChildName = anchorFrameSplit[2];
-	else
-		anchorFrameName = self.anchorFrameName;
-	end
-	local anchorFrame = _G[anchorFrameName];
-	if (anchorFrame) then
-		if (anchorFrameChildName) then
-			anchorFrame = anchorFrame[anchorFrameChildName];
-		end
-	end
-	return anchorFrame;
-end
-
-function FamilyFramesSpellBarMixin:SetAnchor()
-  SecureHandlerSetFrameRef(self, "ffanchorframe", self:GetAnchorFrame());
 end
 
 function FamilyFramesSpellBarMixin:SetButtonAttributes()
@@ -247,7 +213,7 @@ function FamilyFramesButtonMixin:PickupAction()
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = nil;
   end
-  self:GetParent():GetParent():UpdateAllButtons();
+  _G["FamilyFramesEventFrame"]:UpdateAllButtons();
   addonTable.functions.SaveSettings();
   self:PreventButtonClicksWhileChanging();
 end
@@ -280,7 +246,7 @@ function FamilyFramesButtonMixin:PlaceAction()
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["spell"] = nil;
     addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex][self.spellBarSlot]["macro"] = macroName;
   end
-  self:GetParent():GetParent():UpdateAllButtons();
+  _G["FamilyFramesEventFrame"]:UpdateAllButtons();
   ClearCursor();
   addonTable.functions.SaveSettings();
 end
@@ -300,7 +266,10 @@ end
 
 function FamilyFramesButtonMixin:PostClick()
   -- try to make it so the click event fires again later
-  self:AllowButtonClicksAfterChanging();
+  -- need to only do this if self.slotCurrentlyChanging is true (otherwise we get garbage warnings)
+  if (self.slotCurrentlyChanging) then
+    self:AllowButtonClicksAfterChanging();
+  end
 end
 
 function FamilyFramesButtonMixin:PreventButtonClicksWhileChanging()
