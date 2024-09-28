@@ -59,8 +59,8 @@ function FamilyFramesEventMixin:CreateSpellBars()
   addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"] = CreateFrame("Frame", "FamilyFramesSpellBarPlayer", _G["PlayerFrame"], "FamilyFramesSpellBarTemplate");
   addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"].targetUnit = "player";
   SecureHandlerSetFrameRef(addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"], "ffraidplayerframe", addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty1"]);
-  RegisterStateDriver(addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"], "ffsshowframe", "[@party1,exists] hide; show");
-  addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"]:SetAttribute("_onstate-ffsshowframe", [=[
+  RegisterStateDriver(addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"], "ffsplayerframecheck", "[@party1,exists] hide; show");
+  addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"]:SetAttribute("_onstate-ffsplayerframecheck", [=[
     local raidPlayerFrame = self:GetFrameRef("ffraidplayerframe");
     if (raidPlayerFrame:IsVisible()) then
       self:Hide();
@@ -68,6 +68,19 @@ function FamilyFramesEventMixin:CreateSpellBars()
       self:Show();
     end
   ]=]);
+
+  -- add state checks for all bars with vehicle ui
+  for ii, spellBar in pairs(addonTable.spellBars.frames) do
+    RegisterStateDriver(spellBar, "ffsuioverride", "[vehicleui] hide; show");
+    spellBar:SetAttribute("_onstate-ffsuioverride", [=[
+      if (UnitHasVehicleUI("player")) then
+        self:Hide();
+      else
+        self:Show();
+        self:RunAttribute("_onstate-ffsplayerframecheck");
+      end
+    ]=]);
+  end
 
 end
 
@@ -93,6 +106,9 @@ function FamilyFramesSpellBarMixin:OnLoad()
   self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
   self:RegisterEvent("SETTINGS_LOADED");
   self:RegisterEvent("PLAYER_REGEN_ENABLED");
+  self:RegisterEvent("PET_BATTLE_CLOSE");
+  self:RegisterEvent("PET_BATTLE_OPENING_START");
+
 
   self:Show();
 end
@@ -128,6 +144,23 @@ function FamilyFramesSpellBarMixin:OnEvent(event, ...)
   elseif (event == "PLAYER_REGEN_ENABLED") then
     -- load the settings in case they were changed in combat
     self:LoadSettings();
+  elseif (event == "PET_BATTLE_OPENING_START") then
+    if (not InCombatLockdown()) then
+      for ii, spellBar in pairs(addonTable.spellBars.frames) do
+        spellBar:Hide();
+      end
+    end
+  elseif (event == "PET_BATTLE_CLOSE") then
+    if (not InCombatLockdown()) then
+      for ii, spellBar in pairs(addonTable.spellBars.frames) do
+        spellBar:Show();
+      end
+      if (addonTable.spellBars.frames["FamilyFramesSpellBarCompactParty1"]:IsVisible()) then
+        addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"]:Hide();
+      else
+        addonTable.spellBars.frames["FamilyFramesSpellBarPlayer"]:Show();
+      end
+    end
   end
 end
 
