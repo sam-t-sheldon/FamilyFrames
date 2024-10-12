@@ -61,6 +61,29 @@ function addonTable.functions.LoadDefaultSettings()
   addonTable.functions.PrintInfo("Default settings loaded.");
 end
 
+function addonTable.functions.RaidStyleFramesCheck()
+  -- TODO: don't show this if we've shown it to this character before
+  if (not EditModeManagerFrame:UseRaidStylePartyFrames()) then
+    StaticPopupDialogs["FAMILYFRAMES_CHECKRAIDFRAMES"] = {
+      text = "Family Frames spell bars work best when using raid style party frames. Would you like to enable this setting? (It can be changed back at any time using Edit Mode.)",
+      button1 = "Yes",
+      button2 = "No",
+      OnAccept = function()
+          -- change the setting and mark this dialog as having been shown to this character
+          print('yes');
+        end,
+      OnCancel = function()
+          -- mark the dialog as having been shown to this character
+          print('no');
+        end,
+      timeout = 0,
+      whileDead = true,
+      hideOnEscape = true,
+    }
+    StaticPopup_Show("FAMILYFRAMES_CHECKRAIDFRAMES");
+  end
+end
+
 function addonTable.functions.CreateSettingsPanel()
   local category = Settings.RegisterVerticalLayoutCategory("Family Frames");
 

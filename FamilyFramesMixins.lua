@@ -6,6 +6,7 @@ FamilyFramesEventMixin = {};
 function FamilyFramesEventMixin:OnLoad()
   self:RegisterEvent("ADDON_LOADED");
   self:RegisterEvent("PLAYER_REGEN_ENABLED");
+  self:RegisterEvent("SETTINGS_LOADED");
 end
 
 function FamilyFramesEventMixin:OnEvent(event, ...)
@@ -21,6 +22,9 @@ function FamilyFramesEventMixin:OnEvent(event, ...)
   elseif (event == "PLAYER_REGEN_ENABLED") then
     -- clear any combat warnings
     addonTable["Warnings"]["Combat"] = {};
+  elseif (event == "SETTINGS_LOADED") then
+    -- perform a check for raid style party frames    
+    addonTable.functions.RaidStyleFramesCheck();
   end
 end
 
