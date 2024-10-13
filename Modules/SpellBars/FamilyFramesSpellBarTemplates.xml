@@ -21,6 +21,9 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
     <KeyValues>
       <KeyValue key="slotCurrentlyChanging" type="boolean" value="false" />
     </KeyValues>
+    <Attributes>
+      <Attribute name="useparent-unit" value="true" type="boolean" />
+    </Attributes>
     <Layers>
       <Layer level="OVERLAY">
         <Texture name="$parentWarningIcon" parentKey="warningIcon" atlas="Ping_Chat_Warning" useAtlasSize="false" hidden="true">
@@ -42,6 +45,9 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
     <Anchors>
       <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPRIGHT" x="0" y="1"/>
     </Anchors>
+    <Attributes>
+      <Attribute name="useparent-unit" value="true" type="boolean" />
+    </Attributes>
     <Frames>
   
       <CheckButton inherits="FamilyFramesSpellBarButtonTemplate" name="$parentButton1" parentArray="buttons">
@@ -54,7 +60,6 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
         <!--<Attributes>
           <Attribute name="type*" value="spell" />
           <Attribute name="spell" value="Renew" />
-          <Attribute name="unit" value="party1" />
         </Attributes>-->
       </CheckButton>
       
