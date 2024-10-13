@@ -6,12 +6,14 @@
 ## SavedVariables: FamilyFrames_SavedSettings
 
 FamilyFrames.lua
-
 FamilyFramesUtils.lua
-
-FamilyFramesSettings.lua
-
 FamilyFramesTemplates.xml
 FamilyFramesMixins.lua
 
+Modules\SpellBars\FamilyFramesSpellBarUtils.lua
+Modules\SpellBars\FamilyFramesSpellBars.lua
+Modules\SpellBars\FamilyFramesSpellBarMixins.lua
+Modules\SpellBars\FamilyFramesSpellBarTemplates.xml
+
+FamilyFramesSettings.lua
 FamilyFrames.xml

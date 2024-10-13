@@ -133,16 +133,6 @@ function addonTable.functions.GetClassAndSpecInfo()
 	return classID, specIndex;
 end
 
-function addonTable.functions.GetCurrentSpellBarSpells()
-  local classID, specIndex = addonTable.functions.GetClassAndSpecInfo();
-	if (addonTable["Settings"]) then
-		local spellList = addonTable["Settings"]["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["SpellBars"]["SpellLists"][classID][specIndex];
-		return spellList;
-	else
-		return nil;
-	end
-end
-
 -- function to print combat warnings without spamming the chat (the combat warnings will reset per combat through the FamilyFramesEventMixin code)
 function addonTable.functions.PrintCombatWarning(message, warning)
 	if (not addonTable["Warnings"]["Combat"][warning]) then
