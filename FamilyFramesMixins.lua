@@ -20,6 +20,11 @@ function FamilyFramesEventMixin:OnEvent(event, ...)
       local spellBarFrame = CreateFrame("Frame", "FamilyFramesSpellBarEventFrame", UIParent, "FamilyFramesSpellBarEventFrameTemplate");
       spellBarFrame:CreateSpellBars();
     end
+    -- initialize party frame behavior mods
+    if (true) then
+      local partyFrameBehaviorFrame = CreateFrame("Frame", "FamilyFramesPartyFrameBehaviorEventFrame", UIParent, "FamilyFramesPartyFrameBehaviorEventFrameTemplate");
+      partyFrameBehaviorFrame:Init();
+    end
   elseif (event == "PLAYER_REGEN_ENABLED") then
     -- clear any combat warnings
     addonTable["Warnings"]["Combat"] = {};

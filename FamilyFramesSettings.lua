@@ -26,6 +26,9 @@ function addonTable.functions.GetDefaultSettings()
     ["Profiles"] = {
       ["General"] = {
         ["Modules"] = {
+          ["PartyFrameBehavior"] = {
+            ["ShowSolo"] = true
+          },
           ["SpellBars"] = {
             ["Enabled"] = true,
             ["FrameAnchorPoint"] = "TOPRIGHT",
@@ -64,6 +67,7 @@ end
 function addonTable.functions.CreateSettingsPanel()
   local category = Settings.RegisterVerticalLayoutCategory("Family Frames");
 
+  -- spell bar button scale
   do
     local name = "Button Scale (%)";
 	  local variable = "FamilyFrames_ButtonScaleSetting";
@@ -89,6 +93,26 @@ function addonTable.functions.CreateSettingsPanel()
     Settings.CreateSlider(category, setting, options, tooltip);
   end
 
+  -- party frame behavior toggle show party frames solo
+  do
+    local name = "Show Party Frames Solo";
+    local variable = "FamilyFrames_ShowSoloSetting";
+    local defaultValue = false;
+    local tooltip = "Allows (raid-style) party frames to also be shown while solo.";
+
+    local function GetValue()
+      return FamilyFrames_SavedSettings["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["PartyFrameBehavior"]["ShowSolo"] or defaultValue;
+    end
+
+    local function SetValue(value)
+      FamilyFrames_SavedSettings["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["PartyFrameBehavior"]["ShowSolo"] = value;
+      C_EventUtils.NotifySettingsLoaded();
+    end
+
+    local setting = Settings.RegisterProxySetting(category, variable, type(defaultValue), name, defaultValue, GetValue, SetValue);
+    Settings.CreateCheckbox(category, setting, tooltip);
+  end
+
   Settings.RegisterAddOnCategory(category);
 end
 
@@ -103,6 +127,11 @@ function addonTable.functions.UpgradeSettings(savedVersion, currentVersion)
   end
   if (savedVersion == "0.1.2") then
     FamilyFrames_SavedSettings["Version"] = "0.1.3";
+  end
+  if (savedVersion == "0.1.3") then
+    FamilyFrames_SavedSettings["Version"] = "0.1.4";
+    FamilyFrames_SavedSettings["Profiles"]["General"]["Modules"]["PartyFrameBehavior"] = {};
+    FamilyFrames_SavedSettings["Profiles"]["General"]["Modules"]["PartyFrameBehavior"]["ShowSolo"] = true;
   end
   addonTable.functions.PrintInfo("Settings updated for version "..currentVersion);
 end

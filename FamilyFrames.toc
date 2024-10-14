@@ -15,5 +15,8 @@ Modules\SpellBars\FamilyFramesSpellBars.lua
 Modules\SpellBars\FamilyFramesSpellBarMixins.lua
 Modules\SpellBars\FamilyFramesSpellBarTemplates.xml
 
+Modules\PartyFrameBehavior\FamilyFramesPartyFrameBehaviorMixins.lua
+Modules\PartyFrameBehavior\FamilyFramesPartyFrameBehaviorTemplates.xml
+
 FamilyFramesSettings.lua
 FamilyFrames.xml
