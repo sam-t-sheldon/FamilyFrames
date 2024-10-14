@@ -27,7 +27,9 @@ function addonTable.functions.GetDefaultSettings()
       ["General"] = {
         ["Modules"] = {
           ["PartyFrameBehavior"] = {
-            ["ShowSolo"] = true
+            ["ShowSolo"] = true,
+            ["ShowBuffsOutside"] = true,
+            ["ShowDebuffsOutside"] = true
           },
           ["SpellBars"] = {
             ["Enabled"] = true,
@@ -113,6 +115,46 @@ function addonTable.functions.CreateSettingsPanel()
     Settings.CreateCheckbox(category, setting, tooltip);
   end
 
+  -- party frame behavior toggle move buffs outside
+  do
+    local name = "Show Buffs Outside Raid-Style Frames";
+    local variable = "FamilyFrames_ShowBuffsOutsideSetting";
+    local defaultValue = false;
+    local tooltip = "Shows buffs outside raid-style party frames.";
+
+    local function GetValue()
+      return FamilyFrames_SavedSettings["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["PartyFrameBehavior"]["ShowBuffsOutside"] or defaultValue;
+    end
+
+    local function SetValue(value)
+      FamilyFrames_SavedSettings["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["PartyFrameBehavior"]["ShowBuffsOutside"] = value;
+      C_EventUtils.NotifySettingsLoaded();
+    end
+
+    local setting = Settings.RegisterProxySetting(category, variable, type(defaultValue), name, defaultValue, GetValue, SetValue);
+    Settings.CreateCheckbox(category, setting, tooltip);
+  end
+
+  -- party frame behavior toggle move debuffs outside
+  do
+    local name = "Show Debuffs Outside Raid-Style Frames";
+    local variable = "FamilyFrames_ShowDebuffsOutsideSetting";
+    local defaultValue = false;
+    local tooltip = "Shows debuffs outside raid-style party frames.";
+
+    local function GetValue()
+      return FamilyFrames_SavedSettings["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["PartyFrameBehavior"]["ShowDebuffsOutside"] or defaultValue;
+    end
+
+    local function SetValue(value)
+      FamilyFrames_SavedSettings["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["PartyFrameBehavior"]["ShowDebuffsOutside"] = value;
+      C_EventUtils.NotifySettingsLoaded();
+    end
+
+    local setting = Settings.RegisterProxySetting(category, variable, type(defaultValue), name, defaultValue, GetValue, SetValue);
+    Settings.CreateCheckbox(category, setting, tooltip);
+  end
+
   Settings.RegisterAddOnCategory(category);
 end
 
@@ -132,6 +174,11 @@ function addonTable.functions.UpgradeSettings(savedVersion, currentVersion)
     FamilyFrames_SavedSettings["Version"] = "0.1.4";
     FamilyFrames_SavedSettings["Profiles"]["General"]["Modules"]["PartyFrameBehavior"] = {};
     FamilyFrames_SavedSettings["Profiles"]["General"]["Modules"]["PartyFrameBehavior"]["ShowSolo"] = true;
+  end
+  if (savedVersion == "0.1.4") then
+    FamilyFrames_SavedSettings["Version"] = "0.1.5";
+    FamilyFrames_SavedSettings["Profiles"]["General"]["Modules"]["PartyFrameBehavior"]["ShowBuffsOutside"] = true;
+    FamilyFrames_SavedSettings["Profiles"]["General"]["Modules"]["PartyFrameBehavior"]["ShowDebuffsOutside"] = true;
   end
   addonTable.functions.PrintInfo("Settings updated for version "..currentVersion);
 end
