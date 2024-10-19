@@ -11,10 +11,13 @@ function FamilyFramesPartyFrameBehaviorEventMixin:OnEvent(event, ...)
   local arg1 = ...;
   
   if (event == "SETTINGS_LOADED") then
-    -- force check the visibility on CompactPartyFrame
-    CompactPartyFrame:UpdateVisibility();
-    -- manually update buff sizes in case that changed
-    CompactPartyFrame:RefreshMembers();
+    -- TODO: queue this change for after combat ends
+    if (not InCombatLockdown()) then
+      -- force check the visibility on CompactPartyFrame
+      CompactPartyFrame:UpdateVisibility();
+      -- manually update buff sizes in case that changed
+      CompactPartyFrame:RefreshMembers();
+    end
   end
 end
 
@@ -29,6 +32,9 @@ function FamilyFramesPartyFrameBehaviorEventMixin:Init()
 end
 
 function FamilyFrames_ShowPartyFramesWhileSolo()
+  if (InCombatLockdown()) then
+    return;
+  end
   if (FamilyFrames_SavedSettings["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["PartyFrameBehavior"]["ShowSolo"]) then
     -- only override if we're not in a group
     local solo = not IsInGroup();
@@ -54,6 +60,9 @@ function addonTable.functions.GetOuterBuffSize(frame)
 end
 
 function FamilyFrames_MoveBuffs(frame)
+  if (InCombatLockdown()) then
+    return;
+  end
   if (FamilyFrames_SavedSettings["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["PartyFrameBehavior"]["ShowBuffsOutside"]) then
     -- TODO: custom max buffs number
     -- TODO: adjust buff size based on if debuffs are also shown on left
@@ -72,6 +81,9 @@ function FamilyFrames_MoveBuffs(frame)
 end
 
 function FamilyFrames_MoveDebuffs(frame)
+  if (InCombatLockdown()) then
+    return;
+  end
   if (FamilyFrames_SavedSettings["Profiles"][addonTable["Settings"]["CurrentProfile"]]["Modules"]["PartyFrameBehavior"]["ShowDebuffsOutside"]) then
     -- TODO: custom max debuffs number
     -- TODO: adjust debuff size based on if buffs are also shown on left
@@ -98,6 +110,9 @@ function FamilyFrames_MoveDebuffs(frame)
 end
 
 function FamilyFrames_MoveDispelDebuffs(frame)
+  if (InCombatLockdown()) then
+    return;
+  end
   if (true) then -- TODO: setting for this
     
   end

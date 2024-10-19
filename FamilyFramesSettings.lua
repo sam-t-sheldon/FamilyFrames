@@ -180,5 +180,8 @@ function addonTable.functions.UpgradeSettings(savedVersion, currentVersion)
     FamilyFrames_SavedSettings["Profiles"]["General"]["Modules"]["PartyFrameBehavior"]["ShowBuffsOutside"] = true;
     FamilyFrames_SavedSettings["Profiles"]["General"]["Modules"]["PartyFrameBehavior"]["ShowDebuffsOutside"] = true;
   end
+  if (savedVersion == "0.1.5") then
+    FamilyFrames_SavedSettings["Version"] = "0.1.6";
+  end
   addonTable.functions.PrintInfo("Settings updated for version "..currentVersion);
 end
