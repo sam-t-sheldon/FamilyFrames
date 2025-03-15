@@ -183,5 +183,8 @@ function addonTable.functions.UpgradeSettings(savedVersion, currentVersion)
   if (savedVersion == "0.1.5") then
     FamilyFrames_SavedSettings["Version"] = "0.1.6";
   end
+  if (savedVersion == "0.1.6") then
+    FamilyFrames_SavedSettings["Version"] = "0.1.7";
+  end
   addonTable.functions.PrintInfo("Settings updated for version "..currentVersion);
 end

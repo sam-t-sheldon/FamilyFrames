@@ -3,7 +3,7 @@ local addonName, addonTable = ...;
 addonTable.functions = {};
 
 if (not addonTable["Version"]) then
-  addonTable["Version"] = "0.1.6";
+  addonTable["Version"] = "0.1.7";
 end
 if (not addonTable["Settings"]) then
   addonTable["Settings"] = {};
