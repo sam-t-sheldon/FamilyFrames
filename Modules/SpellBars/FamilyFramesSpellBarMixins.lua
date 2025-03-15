@@ -381,3 +381,8 @@ function FamilyFramesSpellBarButtonMixin:SetIcon()
     self.warningIcon:Hide();
   end
 end
+
+-- compatibility fixes
+function FamilyFramesSpellBarButtonMixin:OnButtonStateChanged()
+
+end

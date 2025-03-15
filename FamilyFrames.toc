@@ -1,5 +1,5 @@
 ## Interface: 110002
-## Version: 0.1.3
+## Version: 0.1.6
 ## Title: Family Frames
 ## Notes: Party frames improvement using the base raid frames
 ## Author: Sam Sheldon
@@ -13,6 +13,7 @@ FamilyFramesMixins.lua
 Modules\SpellBars\FamilyFramesSpellBarUtils.lua
 Modules\SpellBars\FamilyFramesSpellBars.lua
 Modules\SpellBars\FamilyFramesSpellBarMixins.lua
+Modules\SpellBars\FallbackTemplates.xml
 Modules\SpellBars\FamilyFramesSpellBarTemplates.xml
 
 Modules\PartyFrameBehavior\FamilyFramesPartyFrameBehaviorMixins.lua

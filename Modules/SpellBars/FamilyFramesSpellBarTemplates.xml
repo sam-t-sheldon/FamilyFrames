@@ -8,7 +8,7 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
 		</Scripts>
   </Frame>
 
-  <CheckButton name="FamilyFramesSpellBarButtonTemplate" inherits="SecureActionButtonTemplate, ActionButtonTemplate" registerForClicks="AnyUp, AnyDown" mixin="FamilyFramesSpellBarButtonMixin" virtual="true">
+  <CheckButton name="FamilyFramesSpellBarButtonTemplate" inherits="SecureActionButtonTemplate, FamilyFramesFallbackActionButtonTemplate" registerForClicks="AnyUp, AnyDown" mixin="FamilyFramesSpellBarButtonMixin" virtual="true">
     <Scripts>
       <OnLoad method="OnLoad" inherit="append" />
 			<OnEvent method="OnEvent" inherit="append" />
