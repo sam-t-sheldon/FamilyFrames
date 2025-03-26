@@ -21,3 +21,8 @@ Modules\PartyFrameBehavior\FamilyFramesPartyFrameBehaviorTemplates.xml
 
 FamilyFramesSettings.lua
 FamilyFrames.xml
+
+Modules\Shared\ActionButton\FamilyFramesActionButtonMixins.lua
+Modules\Shared\ActionButton\FamilyFramesActionButtonTemplates.xml
+
+FamilyFramesTesting.lua
