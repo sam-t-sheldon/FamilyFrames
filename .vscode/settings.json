@@ -1,0 +1,11 @@
+{
+    "Lua.diagnostics.globals": [
+        "UIParent",
+        "CreateFrame",
+        "C_Spell",
+        "InCombatLockdown",
+        "C_UnitAuras",
+        "GetTime",
+        "ActionButton_ApplyCooldown"
+    ]
+}

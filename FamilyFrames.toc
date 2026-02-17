@@ -1,0 +1,12 @@
+## Interface: 120000
+## Version: 1.0.0
+## Title: Family Frames
+## Notes: Accessibility and convenience improvements
+## Author: Sam Sheldon
+## SavedVariables: FamilyFramesDB
+
+Modules\Shared\Utilities.lua
+Modules\Shared\ActionButton.lua
+Modules\Shared\ActionButton.xml
+
+FamilyFrames.lua
