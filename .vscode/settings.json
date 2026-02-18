@@ -6,6 +6,10 @@
         "InCombatLockdown",
         "C_UnitAuras",
         "GetTime",
-        "ActionButton_ApplyCooldown"
+        "ActionButton_ApplyCooldown",
+        "ActionButton_UpdateCooldownNumberHidden",
+        "GetMacroInfo",
+        "IsModifiedClick",
+        "Settings"
     ]
 }

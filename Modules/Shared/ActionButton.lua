@@ -4,8 +4,15 @@ local addonName, addonTable = ...;
 FFActionButtonMixin = {};
 
 function FFActionButtonMixin:OnLoad()
+    -- register events
     self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
     self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
+
+    -- register drag-and-drop
+	self:RegisterForDrag("LeftButton", "RightButton");
+
+    -- temp - set whether or not the cooldown numbers show
+    ActionButton_UpdateCooldownNumberHidden(self);
 end
 
 function FFActionButtonMixin:OnEvent(event, ...)
@@ -31,22 +38,23 @@ function FFActionButtonMixin:SetAction(type, identifier)
     if (type == "spell") then
         local spellName = C_Spell.GetSpellName(identifier);
         local iconID = C_Spell.GetSpellTexture(identifier);
-        self:SetAttribute("spell", identifier);
+        self:SetAttribute("spell", spellName);
         self:SetIcon(iconID);
+    elseif (type == "macro") then
+        local macroName, macroIconID = GetMacroInfo(identifier);
+        self:SetAttribute("macro", macroName);
+        self:SetIcon(macroIconID);
+    -- TODO: items
     end
 end
 
-function FFActionButtonMixin:SetTarget(target)
+function FFActionButtonMixin:SetUnit(target, useParent)
     -- restrict in combat lockdown
     if (addonTable.functions.RestrictInCombat()) then
         return;
     end
 
-    if (target) then
-        self:SetAttribute("target", target);
-    else
-        self:ClearAttribute("target");
-    end
+    -- TODO: target settings
 end
 
 function FFActionButtonMixin:SetIcon(iconID)
@@ -115,11 +123,38 @@ function FFActionButtonMixin:UpdateCooldown()
     ActionButton_ApplyCooldown(self.cooldown, cooldownInfo, self.chargeCooldown, chargeInfo, self.lossOfControlCooldown, lossOfControlInfo);
 end
 
+function FFActionButtonMixin:OnDragStart()
+    -- check modifier key and drag only if allowed
+    if (not Settings.GetValue("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
+        self:PickupAction();
+    end
+end
+
+function FFActionButtonMixin:OnDragStop()
+
+end
+
+function FFActionButtonMixin:OnReceiveDrag()
+    self:PlaceAction();
+end
+
+function FFActionButtonMixin:PreClick()
+
+end
+
+function FFActionButtonMixin:PostClick()
+
+end
+
 function FFActionButtonMixin:PickupAction()
     -- restrict in combat lockdown
     if (addonTable.functions.RestrictInCombat()) then
         return;
     end
+
+    -- TODO: pick up button contents to cursor
+
+    -- TODO: dispatch event
 end
 
 function FFActionButtonMixin:PlaceAction()
@@ -127,4 +162,8 @@ function FFActionButtonMixin:PlaceAction()
     if (addonTable.functions.RestrictInCombat()) then
         return;
     end
+
+    -- TODO: place cursor contents to button if able
+
+    -- TODO: dispatch event
 end

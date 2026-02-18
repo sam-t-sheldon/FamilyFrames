@@ -4,6 +4,11 @@
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append" />
 			<OnEvent method="OnEvent" inherit="append" />
+			<OnDragStart method="OnDragStart" inherit="append" />
+			<OnDragStart method="OnDragStop" inherit="append" />
+			<OnReceiveDrag method="OnReceiveDrag" inherit="append" />
+			<PreClick method="PreClick" inherit="append" />
+			<PreClick method="PostClick" inherit="append" />
 		</Scripts>
         <Size x="45" y="45"/>
 		<KeyValues>
