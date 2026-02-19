@@ -7,6 +7,12 @@ function addonTable.functions.PrintInfo(msg)
     print("|cFF00FF00Family Frames Info: |r"..msg);
 end
 
+function addonTable.functions.PrintDebug(msg)
+    if (addonTable.debug) then
+        print("|cFF00FF00Family Frames Debug: |r"..msg);
+    end
+end
+
 function addonTable.functions.PrintWarning(msg)
     print("|cFFFF4000Family Frames Warning: |r"..msg);
 end

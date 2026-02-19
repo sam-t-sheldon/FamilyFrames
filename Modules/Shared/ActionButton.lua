@@ -1,7 +1,7 @@
 local addonName, addonTable = ...;
 
 -- Base action button mixin
-FFActionButtonMixin = {};
+FFActionButtonMixin = CreateFromMixins(FFEventMixin);
 
 function FFActionButtonMixin:OnLoad()
     -- register events
@@ -154,7 +154,8 @@ function FFActionButtonMixin:PickupAction()
 
     -- TODO: pick up button contents to cursor
 
-    -- TODO: dispatch event
+    -- dispatch event
+    self:DispatchFFEvent("FF_BUTTON_ACTION_REMOVED");
 end
 
 function FFActionButtonMixin:PlaceAction()
@@ -165,5 +166,6 @@ function FFActionButtonMixin:PlaceAction()
 
     -- TODO: place cursor contents to button if able
 
-    -- TODO: dispatch event
+    -- dispatch event
+    self:DispatchFFEvent("FF_BUTTON_ACTION_PLACED");
 end

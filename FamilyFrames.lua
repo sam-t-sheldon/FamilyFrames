@@ -1,5 +1,8 @@
 local addonName, addonTable = ...;
 
+-- debug flag
+addonTable.debug = true;
+
 -- set up the addonTable structures
 
 -- section for combat warning flag to prevent the combat warning from showing up twice

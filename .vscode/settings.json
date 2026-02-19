@@ -10,6 +10,7 @@
         "ActionButton_UpdateCooldownNumberHidden",
         "GetMacroInfo",
         "IsModifiedClick",
-        "Settings"
+        "Settings",
+        "CreateFromMixins"
     ]
 }

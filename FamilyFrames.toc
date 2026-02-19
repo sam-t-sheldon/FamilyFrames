@@ -6,6 +6,7 @@
 ## SavedVariables: FamilyFramesDB
 
 Modules\Shared\Utilities.lua
+Modules\Shared\Events.lua
 Modules\Shared\ActionButton.lua
 Modules\Shared\ActionButton.xml
 
