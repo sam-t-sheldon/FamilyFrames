@@ -7,6 +7,7 @@ function FFActionButtonMixin:OnLoad()
     -- register events
     self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
     self:RegisterEvent("LOSS_OF_CONTROL_ADDED");
+    self:RegisterEvent("CURSOR_CHANGED"); -- TODO: when cursor is holding something, disable buttons if not in combat
 
     -- register drag-and-drop
 	self:RegisterForDrag("LeftButton", "RightButton");
